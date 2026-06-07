@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void:       oklch(5% 0.004 0);
+  --color-void-mid:   oklch(9% 0.004 0);
+  --color-void-soft:  oklch(14% 0.004 0);
+  --color-spark:      oklch(96% 0.25 103);
+  --color-chalk:      oklch(93% 0.005 80);
+  --color-ash:        oklch(38% 0.005 0);
+  --color-dim:        oklch(20% 0.005 0);
+
+  --font-display: var(--font-space-grotesk), "Arial Black", system-ui, sans-serif;
+  --font-body:    var(--font-ibm-plex-mono), "Courier New", monospace;
+}
+
+:root {
+  scroll-behavior: smooth;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: oklch(5% 0.004 0);
+  color: oklch(93% 0.005 80);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+}
+
+::selection {
+  background-color: oklch(96% 0.25 103 / 0.25);
+  color: oklch(5% 0.004 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
