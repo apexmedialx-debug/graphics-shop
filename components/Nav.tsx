@@ -11,9 +11,9 @@ export default function Nav() {
 
   useGSAP(() => {
     gsap.from(navRef.current, {
-      y: -48,
+      y: -60,
       opacity: 0,
-      duration: 0.7,
+      duration: 0.8,
       ease: 'power3.out',
       delay: 0.2,
     });
@@ -24,27 +24,45 @@ export default function Nav() {
       ref={navRef}
       className="fixed top-0 left-0 right-0 z-50"
       style={{
-        backgroundColor: 'oklch(5% 0.004 0 / 0.90)',
+        backgroundColor: 'oklch(5% 0.004 0 / 0.92)',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid oklch(14% 0.004 0)',
       }}
     >
       <div
         className="max-w-7xl mx-auto px-6 flex items-center justify-between"
-        style={{ height: '60px' }}
+        style={{ height: '68px' }}
       >
-        <span
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontWeight: 700,
-            fontSize: '13px',
-            letterSpacing: '0.18em',
-            color: 'oklch(96% 0.25 103)',
-            textTransform: 'uppercase',
-          }}
+        {/* Brand */}
+        <a
+          href="#work"
+          style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '1px', lineHeight: 1 }}
         >
-          GS
-        </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontWeight: 700,
+              fontSize: '22px',
+              letterSpacing: '-0.04em',
+              color: 'oklch(96% 0.25 103)',
+              lineHeight: 1,
+            }}
+          >
+            FORGE
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: '8px',
+              letterSpacing: '0.35em',
+              color: 'oklch(35% 0.005 0)',
+              textTransform: 'uppercase',
+            }}
+          >
+            STUDIO
+          </span>
+        </a>
 
         <ul className="hidden md:flex items-center gap-8">
           {LINKS.map((link) => (
@@ -55,13 +73,13 @@ export default function Nav() {
                   fontFamily: 'var(--font-body)',
                   fontSize: '11px',
                   letterSpacing: '0.22em',
-                  color: 'oklch(40% 0.005 0)',
+                  color: 'oklch(38% 0.005 0)',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
                   transition: 'color 0.2s',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = 'oklch(93% 0.005 80)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'oklch(40% 0.005 0)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'oklch(38% 0.005 0)')}
               >
                 {link}
               </a>

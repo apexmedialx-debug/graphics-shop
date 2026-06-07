@@ -11,6 +11,7 @@ const PLANS = [
   {
     name: 'Starter',
     price: '£499',
+    priceNum: 499,
     unit: 'per project',
     highlight: false,
     features: [
@@ -24,6 +25,7 @@ const PLANS = [
   {
     name: 'Studio',
     price: '£1,299',
+    priceNum: 1299,
     unit: 'per project',
     highlight: true,
     features: [
@@ -38,6 +40,7 @@ const PLANS = [
   {
     name: 'Enterprise',
     price: 'Custom',
+    priceNum: null,
     unit: 'retainer or campaign',
     highlight: false,
     features: [
@@ -47,27 +50,38 @@ const PLANS = [
       'Monthly design credits',
       'Same-day turnaround',
     ],
-    cta: 'Let\'s Talk',
+    cta: "Let's Talk",
   },
 ];
+
+const HEADING_WORDS = ['Pricing'];
 
 export default function Pricing() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    const heading = sectionRef.current?.querySelector('.pricing-heading');
+    const headingEl = sectionRef.current?.querySelector('.pricing-heading-wrap');
+    const words = sectionRef.current?.querySelectorAll('.heading-word');
     const cols = sectionRef.current?.querySelectorAll('.pricing-col');
-    if (!heading || !cols) return;
+    const priceEls = sectionRef.current?.querySelectorAll('.price-num');
 
-    gsap.from(heading, {
-      y: 40,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: heading, start: 'top 88%' },
-    });
+    // Heading word reveal
+    if (words?.length) {
+      gsap.fromTo(
+        words,
+        { y: '110%' },
+        {
+          y: '0%',
+          duration: 0.75,
+          ease: 'power3.out',
+          stagger: 0.08,
+          scrollTrigger: { trigger: headingEl, start: 'top 88%' },
+        }
+      );
+    }
 
-    cols.forEach((col, i) => {
+    // Card stagger
+    cols?.forEach((col, i) => {
       gsap.from(col, {
         y: 50,
         opacity: 0,
@@ -75,6 +89,28 @@ export default function Pricing() {
         ease: 'power3.out',
         delay: i * 0.12,
         scrollTrigger: { trigger: col, start: 'top 88%' },
+      });
+    });
+
+    // Price counter animation
+    priceEls?.forEach((el) => {
+      const num = parseInt(el.getAttribute('data-value') || '', 10);
+      if (isNaN(num)) return;
+
+      el.textContent = '£0';
+      const proxy = { n: 0 };
+      gsap.to(proxy, {
+        n: num,
+        duration: 1.4,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 90%' },
+        onUpdate() {
+          const v = Math.round(proxy.n);
+          el.textContent = `£${v >= 1000 ? v.toLocaleString('en-GB') : v}`;
+        },
+        onComplete() {
+          el.textContent = num >= 1000 ? `£${num.toLocaleString('en-GB')}` : `£${num}`;
+        },
       });
     });
   }, { scope: sectionRef });
@@ -91,7 +127,7 @@ export default function Pricing() {
     >
       <div className="max-w-7xl mx-auto px-6">
         <div
-          className="pricing-heading flex items-baseline justify-between pb-5"
+          className="pricing-heading-wrap flex items-end justify-between pb-5"
           style={{ borderBottom: '1px solid oklch(14% 0.004 0)', marginBottom: '4rem' }}
         >
           <h2
@@ -100,10 +136,22 @@ export default function Pricing() {
               fontWeight: 700,
               fontSize: 'clamp(36px, 6vw, 88px)',
               letterSpacing: '-0.03em',
-              color: 'oklch(93% 0.005 80)',
+              lineHeight: 1,
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0 0.25em',
             }}
           >
-            Pricing
+            {HEADING_WORDS.map((word) => (
+              <span
+                key={word}
+                style={{ display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom' }}
+              >
+                <span className="heading-word" style={{ display: 'inline-block', color: 'oklch(93% 0.005 80)' }}>
+                  {word}
+                </span>
+              </span>
+            ))}
           </h2>
           <span
             className="hidden md:block"
@@ -113,6 +161,7 @@ export default function Pricing() {
               letterSpacing: '0.25em',
               color: 'oklch(28% 0.005 0)',
               textTransform: 'uppercase',
+              paddingBottom: '2px',
             }}
           >
             Simple &amp; Transparent
@@ -129,24 +178,17 @@ export default function Pricing() {
               className="pricing-col flex flex-col"
               style={{
                 padding: '2.5rem',
-                backgroundColor: plan.highlight
-                  ? 'oklch(5% 0.004 0)'
-                  : 'oklch(9% 0.004 0)',
-                outline: plan.highlight
-                  ? '1px solid oklch(96% 0.25 103)'
-                  : 'none',
+                backgroundColor: plan.highlight ? 'oklch(5% 0.004 0)' : 'oklch(9% 0.004 0)',
+                outline: plan.highlight ? '1px solid oklch(96% 0.25 103)' : 'none',
                 outlineOffset: '-1px',
               }}
             >
-              {/* Tier name */}
               <p
                 style={{
                   fontFamily: 'var(--font-body)',
                   fontSize: '11px',
                   letterSpacing: '0.2em',
-                  color: plan.highlight
-                    ? 'oklch(96% 0.25 103)'
-                    : 'oklch(38% 0.005 0)',
+                  color: plan.highlight ? 'oklch(96% 0.25 103)' : 'oklch(38% 0.005 0)',
                   textTransform: 'uppercase',
                   marginBottom: '1.5rem',
                 }}
@@ -154,21 +196,45 @@ export default function Pricing() {
                 {plan.name}
               </p>
 
-              {/* Price */}
-              <div style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid oklch(14% 0.004 0)' }}>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontWeight: 700,
-                    fontSize: 'clamp(36px, 4vw, 56px)',
-                    letterSpacing: '-0.04em',
-                    color: 'oklch(93% 0.005 80)',
-                    lineHeight: 1,
-                    display: 'block',
-                  }}
-                >
-                  {plan.price}
-                </span>
+              <div
+                style={{
+                  marginBottom: '2rem',
+                  paddingBottom: '2rem',
+                  borderBottom: '1px solid oklch(14% 0.004 0)',
+                }}
+              >
+                {plan.priceNum !== null ? (
+                  <span
+                    className="price-num"
+                    data-value={plan.priceNum}
+                    suppressHydrationWarning
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontWeight: 700,
+                      fontSize: 'clamp(36px, 4vw, 56px)',
+                      letterSpacing: '-0.04em',
+                      color: 'oklch(93% 0.005 80)',
+                      lineHeight: 1,
+                      display: 'block',
+                    }}
+                  >
+                    {plan.price}
+                  </span>
+                ) : (
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontWeight: 700,
+                      fontSize: 'clamp(36px, 4vw, 56px)',
+                      letterSpacing: '-0.04em',
+                      color: 'oklch(93% 0.005 80)',
+                      lineHeight: 1,
+                      display: 'block',
+                    }}
+                  >
+                    {plan.price}
+                  </span>
+                )}
                 <span
                   style={{
                     fontFamily: 'var(--font-body)',
@@ -184,11 +250,7 @@ export default function Pricing() {
                 </span>
               </div>
 
-              {/* Features */}
-              <ul
-                className="flex-1"
-                style={{ listStyle: 'none', padding: 0, marginBottom: '2rem' }}
-              >
+              <ul className="flex-1" style={{ listStyle: 'none', padding: 0, marginBottom: '2rem' }}>
                 {plan.features.map((f) => (
                   <li
                     key={f}
@@ -205,9 +267,7 @@ export default function Pricing() {
                       style={{
                         position: 'absolute',
                         left: 0,
-                        color: plan.highlight
-                          ? 'oklch(96% 0.25 103)'
-                          : 'oklch(28% 0.005 0)',
+                        color: plan.highlight ? 'oklch(96% 0.25 103)' : 'oklch(28% 0.005 0)',
                       }}
                     >
                       —
@@ -217,7 +277,6 @@ export default function Pricing() {
                 ))}
               </ul>
 
-              {/* CTA */}
               <a
                 href="#contact"
                 style={{
@@ -230,15 +289,9 @@ export default function Pricing() {
                   letterSpacing: '0.2em',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
-                  backgroundColor: plan.highlight
-                    ? 'oklch(96% 0.25 103)'
-                    : 'transparent',
-                  color: plan.highlight
-                    ? 'oklch(5% 0.004 0)'
-                    : 'oklch(93% 0.005 80)',
-                  border: plan.highlight
-                    ? 'none'
-                    : '1px solid oklch(20% 0.005 0)',
+                  backgroundColor: plan.highlight ? 'oklch(96% 0.25 103)' : 'transparent',
+                  color: plan.highlight ? 'oklch(5% 0.004 0)' : 'oklch(93% 0.005 80)',
+                  border: plan.highlight ? 'none' : '1px solid oklch(20% 0.005 0)',
                   transition: 'all 0.2s',
                 }}
                 onMouseEnter={(e) => {
@@ -246,7 +299,6 @@ export default function Pricing() {
                     e.currentTarget.style.backgroundColor = 'oklch(100% 0 0)';
                   } else {
                     e.currentTarget.style.borderColor = 'oklch(38% 0.005 0)';
-                    e.currentTarget.style.color = 'oklch(100% 0 0)';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -254,7 +306,6 @@ export default function Pricing() {
                     e.currentTarget.style.backgroundColor = 'oklch(96% 0.25 103)';
                   } else {
                     e.currentTarget.style.borderColor = 'oklch(20% 0.005 0)';
-                    e.currentTarget.style.color = 'oklch(93% 0.005 80)';
                   }
                 }}
               >

@@ -17,9 +17,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Graphics Shop — Premium Design & Print Studio",
+  title: "FORGE STUDIO — Premium Graphic Design & Print",
   description:
-    "Brand identity, print design, packaging, large format, and digital assets. Graphics that command attention.",
+    "Brand identity, print design, packaging, large format, and digital assets. Graphics that command attention. Est. 2012.",
 };
 
 export default function RootLayout({

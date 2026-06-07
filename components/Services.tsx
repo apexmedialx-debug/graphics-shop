@@ -16,25 +16,41 @@ const SERVICES = [
   { n: '06', name: 'Motion Graphics', desc: 'Short animations & video assets for social' },
 ];
 
+const HEADING_WORDS = ['What', 'We', 'Do'];
+
 export default function Services() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    const heading = sectionRef.current?.querySelector('.services-heading');
+    const headingEl = sectionRef.current?.querySelector('.services-heading-wrap');
+    const words = sectionRef.current?.querySelectorAll('.heading-word');
     const rows = sectionRef.current?.querySelectorAll('.service-row');
-    if (!heading || !rows) return;
+    const label = sectionRef.current?.querySelector('.section-label');
+    if (!words || !rows) return;
 
-    gsap.from(heading, {
-      y: 40,
+    // Heading word reveal
+    gsap.fromTo(
+      words,
+      { y: '110%' },
+      {
+        y: '0%',
+        duration: 0.75,
+        ease: 'power3.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: headingEl, start: 'top 88%' },
+      }
+    );
+
+    // Section label fade
+    gsap.from(label, {
       opacity: 0,
-      duration: 0.8,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: heading,
-        start: 'top 88%',
-      },
+      duration: 0.6,
+      ease: 'power2.out',
+      scrollTrigger: { trigger: headingEl, start: 'top 88%' },
+      delay: 0.2,
     });
 
+    // Service row reveals
     rows.forEach((row, i) => {
       gsap.fromTo(
         row,
@@ -44,61 +60,119 @@ export default function Services() {
           opacity: 1,
           duration: 0.65,
           ease: 'power3.out',
-          delay: i * 0.06,
-          scrollTrigger: {
-            trigger: row,
-            start: 'top 90%',
-          },
+          delay: i * 0.055,
+          scrollTrigger: { trigger: row, start: 'top 92%' },
         }
       );
     });
   }, { scope: sectionRef });
 
+  const onRowEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    const row = e.currentTarget;
+    row.style.backgroundColor = 'oklch(9% 0.004 0)';
+    row.style.paddingLeft = '0.75rem';
+    row.style.paddingRight = '0.75rem';
+    const arrow = row.querySelector('.row-arrow') as HTMLElement;
+    if (arrow) { arrow.style.opacity = '1'; arrow.style.transform = 'translateX(0)'; }
+  };
+
+  const onRowLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    const row = e.currentTarget;
+    row.style.backgroundColor = 'transparent';
+    row.style.paddingLeft = '0px';
+    row.style.paddingRight = '0px';
+    const arrow = row.querySelector('.row-arrow') as HTMLElement;
+    if (arrow) { arrow.style.opacity = '0'; arrow.style.transform = 'translateX(-8px)'; }
+  };
+
   return (
     <section
       id="services"
       ref={sectionRef}
+      className="relative overflow-hidden"
       style={{ paddingTop: '9rem', paddingBottom: '9rem' }}
     >
-      <div className="max-w-7xl mx-auto px-6">
+      {/* Subtle corner image */}
+      <img
+        src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=50"
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          right: 0,
+          bottom: 0,
+          width: '320px',
+          height: '420px',
+          objectFit: 'cover',
+          objectPosition: 'center',
+          opacity: 0.07,
+          filter: 'grayscale(100%)',
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 relative">
+        {/* Section header */}
         <div
-          className="services-heading flex items-baseline justify-between pb-5"
+          className="services-heading-wrap flex items-end justify-between pb-5"
           style={{ borderBottom: '1px solid oklch(14% 0.004 0)', marginBottom: '0' }}
         >
+          {/* Word-split heading */}
           <h2
             style={{
               fontFamily: 'var(--font-display)',
               fontWeight: 700,
               fontSize: 'clamp(36px, 6vw, 88px)',
               letterSpacing: '-0.03em',
-              color: 'oklch(93% 0.005 80)',
+              lineHeight: 1,
+              overflow: 'hidden',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0 0.25em',
+              alignItems: 'flex-end',
             }}
           >
-            What We Do
+            {HEADING_WORDS.map((word) => (
+              <span
+                key={word}
+                style={{ display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom' }}
+              >
+                <span className="heading-word" style={{ display: 'inline-block', color: 'oklch(93% 0.005 80)' }}>
+                  {word}
+                </span>
+              </span>
+            ))}
           </h2>
+
           <span
-            className="hidden md:block"
+            className="section-label hidden md:block"
             style={{
               fontFamily: 'var(--font-body)',
               fontSize: '11px',
               letterSpacing: '0.25em',
               color: 'oklch(28% 0.005 0)',
               textTransform: 'uppercase',
+              paddingBottom: '2px',
             }}
           >
             Services
           </span>
         </div>
 
+        {/* Service rows */}
         <div>
           {SERVICES.map(({ n, name, desc }) => (
             <div
               key={n}
-              className="service-row flex items-baseline gap-6 md:gap-10"
+              className="service-row flex items-center gap-6 md:gap-10"
               style={{
                 padding: '1.75rem 0',
                 borderBottom: '1px solid oklch(11% 0.004 0)',
+                transition: 'background-color 0.25s, padding-left 0.25s, padding-right 0.25s',
               }}
+              onMouseEnter={onRowEnter}
+              onMouseLeave={onRowLeave}
             >
               <span
                 style={{
@@ -139,6 +213,21 @@ export default function Services() {
               >
                 {desc}
               </p>
+              {/* Hover arrow */}
+              <span
+                className="row-arrow hidden md:block"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '16px',
+                  color: 'oklch(96% 0.25 103)',
+                  flexShrink: 0,
+                  opacity: 0,
+                  transform: 'translateX(-8px)',
+                  transition: 'opacity 0.2s, transform 0.2s',
+                }}
+              >
+                →
+              </span>
             </div>
           ))}
         </div>

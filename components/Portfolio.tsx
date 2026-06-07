@@ -55,13 +55,21 @@ export default function Portfolio() {
     const items = sectionRef.current?.querySelectorAll('.portfolio-item');
     if (!heading || !items) return;
 
-    gsap.from(heading, {
-      y: 40,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: heading, start: 'top 88%' },
-    });
+    // Word reveal on heading
+    const words = sectionRef.current?.querySelectorAll('.heading-word');
+    if (words?.length) {
+      gsap.fromTo(
+        words,
+        { y: '110%' },
+        {
+          y: '0%',
+          duration: 0.75,
+          ease: 'power3.out',
+          stagger: 0.08,
+          scrollTrigger: { trigger: heading, start: 'top 88%' },
+        }
+      );
+    }
 
     items.forEach((item, i) => {
       gsap.fromTo(
@@ -99,10 +107,22 @@ export default function Portfolio() {
               fontWeight: 700,
               fontSize: 'clamp(36px, 6vw, 88px)',
               letterSpacing: '-0.03em',
-              color: 'oklch(93% 0.005 80)',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0 0.25em',
+              lineHeight: 1,
             }}
           >
-            The Work
+            {['The', 'Work'].map((word) => (
+              <span
+                key={word}
+                style={{ display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom' }}
+              >
+                <span className="heading-word" style={{ display: 'inline-block', color: 'oklch(93% 0.005 80)' }}>
+                  {word}
+                </span>
+              </span>
+            ))}
           </h2>
           <span
             className="hidden md:block"

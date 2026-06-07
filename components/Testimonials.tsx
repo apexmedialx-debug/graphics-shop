@@ -32,12 +32,39 @@ export default function Testimonials() {
     if (!blocks) return;
 
     blocks.forEach((block) => {
-      gsap.from(block, {
-        y: 60,
+      const wordInners = block.querySelectorAll('.q-word-inner');
+      const attr = block.querySelector('.quote-attr');
+      const openQuote = block.querySelector('.open-quote');
+      const mark = block.querySelector('.quote-mark');
+
+      gsap.from(mark, {
         opacity: 0,
-        duration: 0.9,
-        ease: 'power3.out',
+        y: 20,
+        duration: 0.5,
+        ease: 'power2.out',
         scrollTrigger: { trigger: block, start: 'top 88%' },
+      });
+
+      gsap.fromTo(
+        wordInners,
+        { y: '115%' },
+        {
+          y: '0%',
+          duration: 0.52,
+          ease: 'power2.out',
+          stagger: 0.022,
+          scrollTrigger: { trigger: block, start: 'top 88%' },
+          delay: 0.15,
+        }
+      );
+
+      gsap.from(attr, {
+        y: 18,
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: block, start: 'top 88%' },
+        delay: 0.5,
       });
     });
   }, { scope: sectionRef });
@@ -53,26 +80,61 @@ export default function Testimonials() {
             <div
               key={q.id}
               className="quote-block"
-              style={{
-                borderTop: '1px solid oklch(14% 0.004 0)',
-                paddingTop: '3rem',
-              }}
+              style={{ borderTop: '1px solid oklch(14% 0.004 0)', paddingTop: '3rem' }}
             >
-              <p
+              {/* Opening mark */}
+              <span
+                className="quote-mark"
                 style={{
+                  display: 'block',
                   fontFamily: 'var(--font-display)',
                   fontWeight: 700,
-                  fontSize: 'clamp(24px, 3.5vw, 48px)',
-                  letterSpacing: '-0.03em',
-                  lineHeight: 1.15,
+                  fontSize: '80px',
+                  lineHeight: 0.7,
+                  color: 'oklch(96% 0.25 103 / 0.25)',
+                  marginBottom: '1rem',
+                  letterSpacing: '-0.05em',
+                }}
+              >
+                &ldquo;
+              </span>
+
+              {/* Word-by-word quote */}
+              <p
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  columnGap: '0.32em',
+                  rowGap: '0.15em',
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 700,
+                  fontSize: 'clamp(22px, 3vw, 42px)',
+                  letterSpacing: '-0.025em',
+                  lineHeight: 1.2,
                   color: 'oklch(96% 0.25 103)',
-                  maxWidth: '28ch',
+                  maxWidth: '32ch',
                   marginBottom: '2rem',
                 }}
               >
-                &ldquo;{q.quote}&rdquo;
+                {q.quote.split(' ').map((word, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      display: 'inline-block',
+                      overflow: 'hidden',
+                      verticalAlign: 'bottom',
+                      lineHeight: 1.25,
+                    }}
+                  >
+                    <span className="q-word-inner" style={{ display: 'inline-block' }}>
+                      {word}
+                    </span>
+                  </span>
+                ))}
               </p>
-              <div>
+
+              {/* Attribution */}
+              <div className="quote-attr">
                 <span
                   style={{
                     fontFamily: 'var(--font-body)',
